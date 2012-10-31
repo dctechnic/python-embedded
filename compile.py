@@ -13,9 +13,8 @@ LDFLAGS = []
 buildExec = False
 
 if True: # iOS
-	DEVROOT = "/Developer/Platforms/iPhoneOS.platform/Developer"
-	#SDKROOT = DEVROOT + "/SDKs/iPhoneOS5.0.sdk"
-	SDKROOT = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk"
+	DEVROOT = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer"
+	SDKROOT = DEVROOT + "/SDKs/iPhoneOS6.0.sdk"
 	assert os.path.exists(DEVROOT)
 	assert os.path.exists(SDKROOT)
 
@@ -23,9 +22,9 @@ if True: # iOS
 	# See https://github.com/albertz/playground/blob/master/test-int-cmp.c .
 	#CC = DEVROOT + "/usr/bin/arm-apple-darwin10-llvm-gcc-4.2"
 	#CC = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
-	CC = "/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/cc"
+	CC = DEVROOT + "/usr/bin/gcc"
 	LD = DEVROOT + "/usr/bin/ld"
-	LIBTOOL = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/libtool"
+	LIBTOOL = DEVROOT + "/usr/bin/libtool"
 	assert os.path.exists(CC)
 	assert os.path.exists(LD)
 	assert os.path.exists(LIBTOOL)
@@ -46,7 +45,7 @@ if True: # iOS
 		#"-fmessage-length=0",
 		#"-Wno-trigraphs",
 		#"-fpascal-strings",
-		"-O0",
+		#"-O0",
 		"-IiOS-static-libs/iPhoneOS-V7-4.3/include/",
 		]
 	LDFLAGS += [
@@ -165,31 +164,31 @@ parserFiles = \
 	set(glob(PythonDir + "/Parser/*.c")) - \
 	set(glob(PythonDir + "/Parser/*pgen*.c"))
 
-pycryptoFiles = \
-	set(glob("pycrypto/src/*.c")) - \
-	set(glob("pycrypto/src/*template.c")) - \
-	set(glob("pycrypto/src/cast*.c")) - \
-	set(glob("pycrypto/src/_fastmath.c")) # for now. it needs libgmp
-
-pycryptoFiles = map(lambda f: "pycrypto/src/" + f,
-	[
-		"_counter.c",
-		"AES.c",
-		"strxor.c",
-	]) + \
-	["pycryptoutils/cryptomodule.c"]
+#pycryptoFiles = \
+#	set(glob("pycrypto/src/*.c")) - \
+#	set(glob("pycrypto/src/*template.c")) - \
+#	set(glob("pycrypto/src/cast*.c")) - \
+#	set(glob("pycrypto/src/_fastmath.c")) # for now. it needs libgmp
+#
+#pycryptoFiles = map(lambda f: "pycrypto/src/" + f,
+#	[
+#		"_counter.c",
+#		"AES.c",
+#		"strxor.c",
+#	]) + \
+#	["pycryptoutils/cryptomodule.c"]
 
 compileOpts = CFLAGS + [
 	"-Ipylib",
 	"-I" + PythonDir + "/Include",
-	"-DWITH_PYCRYPTO",
+#	"-DWITH_PYCRYPTO",
 ]
 
-compilePycryptoOpts = compileOpts + [
-	"-Ipycryptoutils",
-	"-Ipycrypto/src/libtom",
-	"-std=c99",
-]
+#compilePycryptoOpts = compileOpts + [
+#	"-Ipycryptoutils",
+#	"-Ipycrypto/src/libtom",
+#	"-std=c99",
+#]
 
 def execCmd(cmd):
 	cmdFlat = " ".join(cmd)
@@ -207,15 +206,15 @@ def compilePyFile(f, compileOpts):
 		sys.exit(1)
 	return ofile
 
-def compilePycryptoFile(fn):
-	return compilePyFile(fn, compilePycryptoOpts)
+#def compilePycryptoFile(fn):
+#	return compilePyFile(fn, compilePycryptoOpts)
 	
 def compile():
 	ofiles = []
 	for f in list(baseFiles) + list(modFiles) + list(objFiels) + list(parserFiles):
 		ofiles += [compilePyFile(f, compileOpts)]
-	for f in list(pycryptoFiles):
-		ofiles += [compilePycryptoFile(f)]
+	#for f in list(pycryptoFiles):
+	#	ofiles += [compilePycryptoFile(f)]
 	
 	if buildExec:
 		execCmd([CC] + LDFLAGS + map(lambda f: "build/" + f, ofiles) + ["-o", "python"])
@@ -227,14 +226,14 @@ def compile():
 			[LIBTOOL, "-static", "-syslibroot", SDKROOT,
 			 #"-arch_only", "armv7",
 			 "-o", "libpython.a"] +
-			map(lambda f: "build/" + f, ofiles) +
-			map(lambda f: "iOS-static-libs/iPhoneOS-V7-4.3/lib/" + f, [
-				"libssl.a",
-				"libcrypto.a",
-				"libgcrypt.a",
-				"libsasl2.a",
-				"libz.a",
-				]))
+			map(lambda f: "build/" + f, ofiles)) # +
+#			map(lambda f: "iOS-static-libs/iPhoneOS-V7-4.3/lib/" + f, [
+#				"libssl.a",
+#				"libcrypto.a",
+#				"libgcrypt.a",
+#				"libsasl2.a",
+#				"libz.a",
+#				]))
 		
 if __name__ == '__main__':
 	compile()
