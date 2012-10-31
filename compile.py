@@ -38,6 +38,7 @@ if True: # iOS
 		#"-no-cpp-precomp",
 		"-arch", "armv6",
 		"-arch", "armv7",
+		"-arch", "armv7s",
 		"-miphoneos-version-min=4.3",
 		"-mthumb",
 		"-g",
@@ -50,6 +51,8 @@ if True: # iOS
 		]
 	LDFLAGS += [
 		"-arch", "armv6",
+		"-arch", "armv7",
+		"-arch", "armv7s",		
 		"-ios_version_min", "4.3",
 		#"-isysroot", SDKROOT,
 		"-L%s/usr/lib" % SDKROOT,
@@ -145,8 +148,8 @@ modFiles = \
 			"binascii.c",
 			"_randommodule.c",
 			"socketmodule.c",
-			"_ssl.c",
-			"zlibmodule.c",
+			#"_ssl.c",
+			#"zlibmodule.c",
 			"selectmodule.c",
 			"signalmodule.c",
 			"fcntlmodule.c",

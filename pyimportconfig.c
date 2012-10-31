@@ -33,7 +33,9 @@ extern void initthread(void);
 extern void initbinascii(void);
 extern void init_random(void);
 extern void init_socket(void);
+#ifdef WITH_SSL
 extern void init_ssl(void);
+#endif
 extern void initzlib(void);
 extern void initselect(void);
 extern void initsignal(void);
@@ -73,8 +75,12 @@ struct _inittab _PyImport_Inittab[] = {
 	{"binascii", initbinascii},
 	{"_random", init_random},
 	{"_socket", init_socket},
+#ifdef WITH_SSL
 	{"_ssl", init_ssl},
+#endif
+#ifdef WITH_ZLIB
 	{"zlib", initzlib},
+#endif
 	{"select", initselect},
 	{"signal", initsignal},
 	{"fcntl", initfcntl},
