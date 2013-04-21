@@ -14,7 +14,7 @@ buildExec = False
 
 if True: # iOS
 	DEVROOT = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer"
-	SDKROOT = DEVROOT + "/SDKs/iPhoneOS6.0.sdk"
+	SDKROOT = DEVROOT + "/SDKs/iPhoneOS6.1.sdk"
 	assert os.path.exists(DEVROOT)
 	assert os.path.exists(SDKROOT)
 
